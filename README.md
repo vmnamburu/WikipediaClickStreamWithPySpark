@@ -464,7 +464,7 @@ clickSocialSQL.show()
 
 ### 5 Which referred pages lead to maximum broken links
 
-A Broken link is identified with a -1 in curr_id and the type has a value of redlink
+A Broken link is a wikilink on the referring page pointing to a wikipage that does not exist
 
 
 ```python
@@ -533,8 +533,3 @@ clickBrokenLinks.show()
     only showing top 20 rows
     
 
-
-
-```python
-
-```
