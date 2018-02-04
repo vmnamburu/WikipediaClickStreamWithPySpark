@@ -12,6 +12,15 @@ __Tools Used__
 
 https://ndownloader.figshare.com/files/5036383
 
+
+```python
+# Download file as 2015_02_en_clickstream.tsv
+$wget https://ndownloader.figshare.com/files/5036383 --output-document=2015_02_en_clickstream.tsv
+
+# Move file to HDFS
+$hadoop fs -put 2015_02_en_clickstream.tsv /user/cloudera/wikiClickstream/
+```
+
 #### 1.2 Examine the content and structure of this file
 
 
@@ -452,3 +461,80 @@ clickSocialSQL.show()
     only showing top 20 rows
     
 
+
+### 5 Which referred pages lead to maximum broken links
+
+A Broken link is identified with a -1 in curr_id and the type has a value of redlink
+
+
+```python
+brokenLinks = clickDF.filter(clickDF.curr_id == -1)
+brokenLinks.show()
+```
+
+    +-------+--------------------+---+--------+--------------------+-------+
+    |curr_id|          curr_title|  n| prev_id|          prev_title|   type|
+    +-------+--------------------+---+--------+--------------------+-------+
+    |     -1|   "Bigfoot"_Wallace| 15|11273993|Colt_1851_Navy_Re...|redlink|
+    |     -1|"Chúc_Mừng_Năm_Mớ...| 51|   69161|                 Tết|redlink|
+    |     -1|"Cool_Hand_Conor"...| 14| 1438509|List_of_Old_West_...|redlink|
+    |     -1|"D"_Is_for_Dubby_...| 47| 4619790|            Puscifer|redlink|
+    |     -1|"D"_Is_for_Dubby_...| 43|16079543|"V"_Is_for_Viagra...|redlink|
+    |     -1|"D"_Is_for_Dubby_...| 18|25033979|"C"_is_for_(Pleas...|redlink|
+    |     -1|"EXO_Music_Video_...| 23|39737124|         Yoon_So-hee|redlink|
+    |     -1|"Firth"_logistic_...| 24|29668256|Separation_(stati...|redlink|
+    |     -1|"Future_(rapper)"...| 20| 1696824|   Kirkwood,_Atlanta|redlink|
+    |     -1|     "Knockin'_Boots| 10| 2110406|        Pretty_Ricky|redlink|
+    |     -1| "Mothercare"_spider| 20| 3419979|    Woodlouse_spider|redlink|
+    |     -1|"One_Arm_Bill"_Wi...| 13|25133882|Goodnight–Loving_...|redlink|
+    |     -1|          "That_Man"| 14|24961418|        Caro_Emerald|redlink|
+    |     -1|"The_Mills",_Andr...| 12| 1442421|Chadds_Ford_Towns...|redlink|
+    |     -1| "Tinker_Dave"_Beaty| 24| 2804228|      Champ_Ferguson|redlink|
+    |     -1|         "et_cetera"|115|  202033|                 ECT|redlink|
+    |     -1|              "etc."|244|  202033|                 ECT|redlink|
+    |     -1| '''Akhand_Bharat'''| 37|30863671|List_of_newspaper...|redlink|
+    |     -1| '''Dainik_Jagran'''| 84|30863671|List_of_newspaper...|redlink|
+    |     -1|'''Luppak_state''...| 10|18934934|    Read-only_memory|redlink|
+    +-------+--------------------+---+--------+--------------------+-------+
+    only showing top 20 rows
+    
+
+
+
+```python
+clickBrokenLinks = clickDF.filter(clickDF.curr_id == -1).groupBy('prev_title').agg(F.sum(clickDF.n).alias('total_broken')).orderBy('total_broken',ascending=False)
+clickBrokenLinks.show()
+```
+
+    +--------------------+------------+
+    |          prev_title|total_broken|
+    +--------------------+------------+
+    |List_of_adult_tel...|       16812|
+    |      Deaths_in_2015|       10184|
+    |  Illusion_(company)|        9552|
+    |List_of_festivals...|        7673|
+    |2023_Cricket_Worl...|        7447|
+    |         Tom_Selleck|        6434|
+    |           Sinusitis|        5715|
+    |  Outline_of_thought|        5314|
+    |Meri_Aashiqui_Tum...|        4989|
+    |List_of_TVB_drama...|        4739|
+    |List_of_UPnP_AV_m...|        4391|
+    |List_of_oil_refin...|        4313|
+    |List_of_Tamil_fil...|        4287|
+    |The_Bachelor_(U.S...|        3927|
+    |Saath_Nibhaana_Sa...|        3875|
+    |        Pawan_Kalyan|        3764|
+    |Nisha_Aur_Uske_Co...|        3661|
+    |    2014_Mr._Olympia|        3461|
+    |        Marc_Anthony|        3408|
+    |List_of_Victoria'...|        3284|
+    +--------------------+------------+
+    only showing top 20 rows
+    
+
+
+
+```python
+
+```
